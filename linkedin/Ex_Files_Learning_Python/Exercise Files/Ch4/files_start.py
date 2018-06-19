@@ -17,14 +17,15 @@ def main():
   #f.close()
 
   # Open the file back up and read the contents
-  f = open('textfile.txt', 'r')
-  if (f.mode == 'r'):
-    # contents = f.read()
-    # print(contents)
-    fl = f.readlines()
-    for line in fl:
-      print(line)
-    
-    
+  # It is good practice to use the with keyword when dealing with file objects.
+  # The advantage is that the file is properly closed, even if an exception is raised at some point
+  with open('textfile.txt', 'r') as f:
+    if (f.mode == 'r'):
+      # contents = f.read()
+      # print(contents)
+      fl = f.readlines()
+      for line in fl:
+        print(line)
+
 if __name__ == "__main__":
   main()
