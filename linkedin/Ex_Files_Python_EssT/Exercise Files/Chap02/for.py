@@ -3,6 +3,8 @@
 
 words = ['one', 'two', 'three', 'four', 'five']
 
-for i in words:
-    print(i)
+for w in words:
+    print(w)
 
+# w variable remains in scope outside the loop
+print(f"Last word: {w}")
