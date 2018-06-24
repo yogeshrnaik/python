@@ -108,9 +108,9 @@ def list():
 
 def set():
     # set is an unordered collection with no duplicate elements
-    # in below set, java is duplicate which will be removed automatically by set
     printSeparator()
     print('set()')
+    # in below set, java is duplicate which will be removed automatically by set
     set = {'python','java','c#','php', 'java'}
     printTypeOf(set)
     
