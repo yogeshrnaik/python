@@ -7,7 +7,7 @@ def printSeparator():
 def main():
     x = kitten()
     # x = None as kitten() is not returning any value
-    print(x)
+    print(type(x), x)
 
     puppies(10) # 2nd and 3rd param will get default value
     puppies(10, 20) # 3rd param will get default value

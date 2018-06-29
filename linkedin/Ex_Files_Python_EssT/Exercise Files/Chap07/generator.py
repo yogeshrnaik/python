@@ -23,6 +23,8 @@ def inclusive_range(*args):
     else: raise TypeError(f'expected at most 3 arguments, got {numargs}')
 
     # generator
+    # A generator is a special class of function that serves as an iterator 
+    # instead of returning a single value the generator returns a stream of values.
     i = start
     while i <= stop:
         yield i

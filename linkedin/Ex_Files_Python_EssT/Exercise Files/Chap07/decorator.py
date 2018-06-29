@@ -3,6 +3,9 @@
 
 import time
 
+def printSeparator():
+    print('*****************************************************************')
+
 def elapsed_time(f):
     def wrapper():
         t1 = time.time()
@@ -15,11 +18,20 @@ def elapsed_time(f):
 @elapsed_time
 def big_sum():
     num_list = []
-    for num in (range(0, 10000)):
+    for num in (range(0, 100000)):
         num_list.append(num)
     print(f'Big sum: {sum(num_list)}')
 
+# we can decorate more than one function with same function
+@elapsed_time
+def anotherFunction():
+    print('inside anotherFunction()...')
+
 def main():
+    printSeparator()
     big_sum()
+    printSeparator()
+    anotherFunction()
+    printSeparator()
 
 if __name__ == '__main__': main()
