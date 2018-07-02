@@ -19,12 +19,14 @@ class inclusive_range:
 
         self._next = self._start
     
+    # this special method identifies this object as Iterator object
     def __iter__(self):
         return self
 
+    # this is iteration itself
     def __next__(self):
         if self._next > self._stop:
-            raise StopIteration
+            raise StopIteration # this will stop the iteration
         else:
             _r = self._next
             self._next += self._step

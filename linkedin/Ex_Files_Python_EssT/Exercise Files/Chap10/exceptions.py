@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Copyright 2009-2017 BHG http://bw.org/
+import sys
 
 def inclusive_range(*args):
     numargs = len(args)
@@ -24,8 +25,12 @@ def inclusive_range(*args):
         i += step
 
 def main():
-    for i in inclusive_range(25):
-        print(i, end = ' ', flush = True)
-    print()
+    try:
+        for i in inclusive_range():
+            print(i, end = ' ', flush = True)
+        print()
+    except TypeError as e:
+        print(f'Error: {sys.exc_info()}')
+        print(f'Error: {e}')
 
 if __name__ == '__main__': main()

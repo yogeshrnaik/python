@@ -28,4 +28,10 @@ def main():
     print(a0)
     print(a1)
 
+    # Python does not have private variables in class
+    # it is general practive to name variables that we want to be private with leading underscore (_)
+    # but that is just convention. it does not stop us from modifying the variable
+    a0._type = 'Changed Type' # we can modify _type here as there is no notion of private variable
+    print(a0)
+
 if __name__ == '__main__': main()
