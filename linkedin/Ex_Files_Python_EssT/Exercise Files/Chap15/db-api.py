@@ -5,7 +5,7 @@ import sqlite3
 
 def main():
     print('connect')
-    db = sqlite3.connect('db-api.db')
+    db = sqlite3.connect('./Chap15/db-api.db')
     cur = db.cursor()
     print('create')
     cur.execute("DROP TABLE IF EXISTS test")
