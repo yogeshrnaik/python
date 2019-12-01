@@ -19,7 +19,6 @@ def check_profanity(text):
     else:
         print("Could not scan the document properly.")
 
-
     con.close()
 
 read_text()
