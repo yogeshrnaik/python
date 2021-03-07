@@ -83,29 +83,33 @@ def aggregate(events):
     aggregates = addAggregate(None)
 
     for i in range(0, len(events)):
+        event_date, amount, = events[i]["date"], events[i]['amount']
+        paymentMethod, merchantId = events[i]['paymentMethod'], events[i]["merchantId"]
+
         ANY_STRING = '.+'
-        DATE_PATTERN = f'^({ANY_STRING})'
+        STARTS_WITH = '^'
+        DATE_SUBTITUTION = f'{STARTS_WITH}({ANY_STRING})'
         MINUTE_SECOND_PATTERN = f'{ANY_STRING}$'
-        HOUR = '(\d+)'
+        HOUR_SUBSTITUTION = '(\d+)'
         TIME_PATTERN = f'T{ANY_STRING}$'
         addAggregate(
             re.sub(
-                rf"{DATE_PATTERN}T{HOUR}:{MINUTE_SECOND_PATTERN}", r"\1:\2", events[i]["date"]
-            ) + '|' + amountBracket(events[i]['amount'])
+                rf"{DATE_SUBTITUTION}T{HOUR_SUBSTITUTION}:{MINUTE_SECOND_PATTERN}", r"\1:\2", event_date
+            ) + '|' + amountBracket(amount)
         )
         addAggregate(
             re.sub(
-                rf"{DATE_PATTERN}T{HOUR}:{MINUTE_SECOND_PATTERN}",
-                r"\1:\2", events[i]["date"]
-            ) + '|' + amountBracket(events[i]['amount']) + '|' + events[i]["paymentMethod"]
+                rf"{DATE_SUBTITUTION}T{HOUR_SUBSTITUTION}:{MINUTE_SECOND_PATTERN}",
+                r"\1:\2", event_date
+            ) + '|' + amountBracket(amount) + '|' + paymentMethod
         )
-        addAggregate(amountBracket(events[i]['amount']) + '|' + events[i]["paymentMethod"])
+        addAggregate(amountBracket(amount) + '|' + paymentMethod)
         addAggregate(
             re.sub(
-                rf"{TIME_PATTERN}", "", events[i]["date"]
+                rf"{TIME_PATTERN}", "", event_date
             )
-            + '|' + events[i]["merchantId"])
-        addAggregate(events[i]["merchantId"] + '|' + events[i]["paymentMethod"])
+            + '|' + merchantId)
+        addAggregate(merchantId + '|' + paymentMethod)
 
     return aggregates
 
