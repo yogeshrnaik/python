@@ -57,6 +57,13 @@ AMOUNT_BRACKET_RULES = [
     lambda amount: "<10" if amount < 1000 else "",
 ]
 
+ANY_STRING = '.+'
+STARTS_WITH = '^'
+DATE_SUBSTITUTION = f'{STARTS_WITH}({ANY_STRING})'
+MINUTE_SECOND_PATTERN = f'{ANY_STRING}$'
+HOUR_SUBSTITUTION = '(\d+)'
+TIME_PATTERN = f'T{ANY_STRING}$'
+
 
 def amountBracket(amount):
     return next(
@@ -86,32 +93,25 @@ def aggregate(events):
         event_date, amount, = events["date"], events['amount']
         paymentMethod, merchantId = events['paymentMethod'], events["merchantId"]
 
-        ANY_STRING = '.+'
-        STARTS_WITH = '^'
-        DATE_SUBTITUTION = f'{STARTS_WITH}({ANY_STRING})'
-        MINUTE_SECOND_PATTERN = f'{ANY_STRING}$'
-        HOUR_SUBSTITUTION = '(\d+)'
-        TIME_PATTERN = f'T{ANY_STRING}$'
-        addAggregate(
-            re.sub(
-                rf"{DATE_SUBTITUTION}T{HOUR_SUBSTITUTION}:{MINUTE_SECOND_PATTERN}", r"\1:\2", event_date
-            ) + '|' + amountBracket(amount)
-        )
-        addAggregate(
-            re.sub(
-                rf"{DATE_SUBTITUTION}T{HOUR_SUBSTITUTION}:{MINUTE_SECOND_PATTERN}",
-                r"\1:\2", event_date
-            ) + '|' + amountBracket(amount) + '|' + paymentMethod
-        )
+        addAggregate(getDateWithHour(event_date) + '|' + amountBracket(amount))
+        addAggregate(getDateWithHour(event_date) + '|' + amountBracket(amount) + '|' + paymentMethod)
         addAggregate(amountBracket(amount) + '|' + paymentMethod)
-        addAggregate(
-            re.sub(
-                rf"{TIME_PATTERN}", "", event_date
-            )
-            + '|' + merchantId)
+        addAggregate(getDateWithoutTime(event_date) + '|' + merchantId)
         addAggregate(merchantId + '|' + paymentMethod)
 
     return aggregates
+
+
+def getDateWithoutTime(event_date):
+    return re.sub(
+        rf"{TIME_PATTERN}", "", event_date
+    )
+
+
+def getDateWithHour(event_date):
+    return re.sub(
+        rf"{DATE_SUBSTITUTION}T{HOUR_SUBSTITUTION}:{MINUTE_SECOND_PATTERN}", r"\1:\2", event_date
+    )
 
 
 import unittest
