@@ -82,9 +82,9 @@ def addAggregate(datapoint, aggregates=[]):
 def aggregate(events):
     aggregates = addAggregate(None)
 
-    for i in range(0, len(events)):
-        event_date, amount, = events[i]["date"], events[i]['amount']
-        paymentMethod, merchantId = events[i]['paymentMethod'], events[i]["merchantId"]
+    for events in events:
+        event_date, amount, = events["date"], events['amount']
+        paymentMethod, merchantId = events['paymentMethod'], events["merchantId"]
 
         ANY_STRING = '.+'
         STARTS_WITH = '^'
