@@ -62,7 +62,8 @@ def amountBracket(amount):
     return next(
         filter(
             lambda ruleResult: ruleResult,
-            [ruleFunc(amount) for ruleFunc in AMOUNT_BRACKET_RULES])
+            [ruleFunc(amount) for ruleFunc in AMOUNT_BRACKET_RULES]
+        )
     )
 
 
@@ -82,12 +83,28 @@ def aggregate(events):
     aggregates = addAggregate(None)
 
     for i in range(0, len(events)):
-        addAggregate(re.sub(r"^(.+)T(\d+):.+$", r"\1:\2", events[i]["date"]) + '|' + amountBracket(events[i]['amount']))
+        ANY_STRING = '.+'
+        DATE_PATTERN = f'^({ANY_STRING})'
+        MINUTE_SECOND_PATTERN = f'{ANY_STRING}$'
+        HOUR = '(\d+)'
+        TIME_PATTERN = f'T{ANY_STRING}$'
         addAggregate(
-            re.sub(r"^(.+)T(\d+):.+$", r"\1:\2", events[i]["date"]) + '|' + amountBracket(events[i]['amount']) + '|' +
-            events[i]["paymentMethod"])
+            re.sub(
+                rf"{DATE_PATTERN}T{HOUR}:{MINUTE_SECOND_PATTERN}", r"\1:\2", events[i]["date"]
+            ) + '|' + amountBracket(events[i]['amount'])
+        )
+        addAggregate(
+            re.sub(
+                rf"{DATE_PATTERN}T{HOUR}:{MINUTE_SECOND_PATTERN}",
+                r"\1:\2", events[i]["date"]
+            ) + '|' + amountBracket(events[i]['amount']) + '|' + events[i]["paymentMethod"]
+        )
         addAggregate(amountBracket(events[i]['amount']) + '|' + events[i]["paymentMethod"])
-        addAggregate(re.sub(r"T.+$", "", events[i]["date"]) + '|' + events[i]["merchantId"])
+        addAggregate(
+            re.sub(
+                rf"{TIME_PATTERN}", "", events[i]["date"]
+            )
+            + '|' + events[i]["merchantId"])
         addAggregate(events[i]["merchantId"] + '|' + events[i]["paymentMethod"])
 
     return aggregates
