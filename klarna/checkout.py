@@ -85,41 +85,24 @@ def addAggregate(datapoint, aggregates=[]):
     return {"datapoint": datapoint, "events": 1}
 
 
-def aggregate(events):
-    aggregates = []
-    data_points = []
-
-    for events in events:
-        event_date, amount, = events["date"], events['amount']
-        paymentMethod, merchantId = events['paymentMethod'], events["merchantId"]
-
-        addAggregate(getByHourAndAmountBracket(event_date, amount), aggregates)
-        addAggregate(getByHourAndAmountBracketAndPaymentMethod(event_date, amount, paymentMethod), aggregates)
-        addAggregate(getByAmountBracketAndPaymentMethod(amount, paymentMethod), aggregates)
-        addAggregate(getByDateAndMerchant(event_date, merchantId), aggregates)
-        addAggregate(getByMerchantAndPaymentMethod(merchantId, paymentMethod), aggregates)
-
-    return aggregates
+def getByMerchantAndPaymentMethod(event):
+    return event["merchantId"] + '|' + event['paymentMethod']
 
 
-def getByMerchantAndPaymentMethod(merchantId, paymentMethod):
-    return merchantId + '|' + paymentMethod
+def getByDateAndMerchant(event):
+    return getDateWithoutTime(event['date']) + '|' + event['merchantId']
 
 
-def getByDateAndMerchant(event_date, merchantId):
-    return getDateWithoutTime(event_date) + '|' + merchantId
+def getByAmountBracketAndPaymentMethod(event):
+    return amountBracket(event['amount']) + '|' + event['paymentMethod']
 
 
-def getByAmountBracketAndPaymentMethod(amount, paymentMethod):
-    return amountBracket(amount) + '|' + paymentMethod
+def getByHourAndAmountBracket(event):
+    return getDateWithHour(event['date']) + '|' + amountBracket(event['amount'])
 
 
-def getByHourAndAmountBracket(event_date, amount):
-    return getDateWithHour(event_date) + '|' + amountBracket(amount)
-
-
-def getByHourAndAmountBracketAndPaymentMethod(event_date, amount, paymentMethod):
-    return getDateWithHour(event_date) + '|' + amountBracket(amount) + '|' + paymentMethod
+def getByHourAndAmountBracketAndPaymentMethod(event):
+    return getDateWithHour(event['date']) + '|' + amountBracket(event['amount']) + '|' + event['paymentMethod']
 
 
 def getDateWithoutTime(event_datetime):
@@ -132,6 +115,26 @@ def getDateWithHour(event_datetime):
     return re.sub(
         rf"{DATE_SUBSTITUTION}T{HOUR_SUBSTITUTION}:{MINUTE_SECOND_PATTERN}", r"\1:\2", event_datetime
     )
+
+
+AGGREGATE_DATAPOINT_KEY_FUNCTIONS = [
+    lambda event: getByHourAndAmountBracket(event),
+    lambda event: getByHourAndAmountBracketAndPaymentMethod(event),
+    lambda event: getByAmountBracketAndPaymentMethod(event),
+    lambda event: getByDateAndMerchant(event),
+    lambda event: getByMerchantAndPaymentMethod(event),
+]
+
+
+def aggregate(events):
+    aggregates = []
+
+    for event in events:
+        dataPointKeys = [datapointKeyFunc(event) for datapointKeyFunc in AGGREGATE_DATAPOINT_KEY_FUNCTIONS]
+        for datapointKey in dataPointKeys:
+            addAggregate(datapointKey, aggregates)
+
+    return aggregates
 
 
 import unittest
