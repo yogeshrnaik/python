@@ -49,20 +49,20 @@ layer, so the tests don't break.
 
 import re
 
+AMOUNT_BRACKET_RULES = [
+    lambda amount: ">500" if amount > 50000 else "",
+    lambda amount: "100-500" if 10000 < amount < 50000 else "",
+    lambda amount: "50-100" if 5000 < amount < 10000 else "",
+    lambda amount: "10-50" if 1000 < amount < 5000 else "",
+    lambda amount: "<10" if amount < 1000 else "",
+]
+
 
 def amountBracket(amount):
-    amountBracketRules = [
-        lambda amount: ">500" if amount > 50000 else "",
-        lambda amount: "100-500" if 10000 < amount < 50000 else "",
-        lambda amount: "50-100" if 5000 < amount < 10000 else "",
-        lambda amount: "10-50" if 1000 < amount < 5000 else "",
-        lambda amount: "<10" if amount < 1000 else "",
-    ]
-
     return next(
         filter(
             lambda ruleResult: ruleResult,
-            [ruleFunc(amount) for ruleFunc in amountBracketRules])
+            [ruleFunc(amount) for ruleFunc in AMOUNT_BRACKET_RULES])
     )
 
 
