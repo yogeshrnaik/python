@@ -74,17 +74,6 @@ def amountBracket(amount):
     )
 
 
-def addAggregate(datapoint, aggregates=[]):
-    for aggregate in aggregates:
-        if aggregate["datapoint"] == datapoint:
-            aggregate["events"] += 1
-            return {"datapoint": datapoint, "events": 1}
-
-    aggregates.append({"datapoint": datapoint, "events": 1})
-
-    return {"datapoint": datapoint, "events": 1}
-
-
 def getByMerchantAndPaymentMethod(event):
     return event["merchantId"] + '|' + event['paymentMethod']
 
@@ -106,9 +95,7 @@ def getByHourAndAmountBracketAndPaymentMethod(event):
 
 
 def getDateWithoutTime(event_datetime):
-    return re.sub(
-        rf"{TIME_PATTERN}", "", event_datetime
-    )
+    return re.sub(rf"{TIME_PATTERN}", "", event_datetime)
 
 
 def getDateWithHour(event_datetime):
@@ -127,13 +114,20 @@ AGGREGATE_DATAPOINT_KEY_FUNCTIONS = [
 
 
 def aggregate(events):
-    aggregates = []
-
+    """
+    TODO: this function needs to be made pure
+    :param events:
+    :return:
+    """
+    dataPoints = {}
     for event in events:
         dataPointKeys = [datapointKeyFunc(event) for datapointKeyFunc in AGGREGATE_DATAPOINT_KEY_FUNCTIONS]
         for datapointKey in dataPointKeys:
-            addAggregate(datapointKey, aggregates)
+            dataPoints[datapointKey] = dataPoints.get(datapointKey, 0) + 1
 
+    aggregates = []
+    for datapoint, count in dataPoints.items():
+        aggregates.append({"datapoint": datapoint, "events": count})
     return aggregates
 
 
