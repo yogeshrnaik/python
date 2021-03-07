@@ -78,36 +78,59 @@ def addAggregate(datapoint, aggregates=[]):
     for aggregate in aggregates:
         if aggregate["datapoint"] == datapoint:
             aggregate["events"] += 1
-            return
+            return {"datapoint": datapoint, "events": 1}
 
     aggregates.append({"datapoint": datapoint, "events": 1})
+
+    return {"datapoint": datapoint, "events": 1}
 
 
 def aggregate(events):
     aggregates = []
+    data_points = []
 
     for events in events:
         event_date, amount, = events["date"], events['amount']
         paymentMethod, merchantId = events['paymentMethod'], events["merchantId"]
 
-        addAggregate(getDateWithHour(event_date) + '|' + amountBracket(amount), aggregates)
-        addAggregate(getDateWithHour(event_date) + '|' + amountBracket(amount) + '|' + paymentMethod, aggregates)
-        addAggregate(amountBracket(amount) + '|' + paymentMethod, aggregates)
-        addAggregate(getDateWithoutTime(event_date) + '|' + merchantId, aggregates)
-        addAggregate(merchantId + '|' + paymentMethod, aggregates)
+        addAggregate(getByHourAndAmountBracket(event_date, amount), aggregates)
+        addAggregate(getByHourAndAmountBracketAndPaymentMethod(event_date, amount, paymentMethod), aggregates)
+        addAggregate(getByAmountBracketAndPaymentMethod(amount, paymentMethod), aggregates)
+        addAggregate(getByDateAndMerchant(event_date, merchantId), aggregates)
+        addAggregate(getByMerchantAndPaymentMethod(merchantId, paymentMethod), aggregates)
 
     return aggregates
 
 
-def getDateWithoutTime(event_date):
+def getByMerchantAndPaymentMethod(merchantId, paymentMethod):
+    return merchantId + '|' + paymentMethod
+
+
+def getByDateAndMerchant(event_date, merchantId):
+    return getDateWithoutTime(event_date) + '|' + merchantId
+
+
+def getByAmountBracketAndPaymentMethod(amount, paymentMethod):
+    return amountBracket(amount) + '|' + paymentMethod
+
+
+def getByHourAndAmountBracket(event_date, amount):
+    return getDateWithHour(event_date) + '|' + amountBracket(amount)
+
+
+def getByHourAndAmountBracketAndPaymentMethod(event_date, amount, paymentMethod):
+    return getDateWithHour(event_date) + '|' + amountBracket(amount) + '|' + paymentMethod
+
+
+def getDateWithoutTime(event_datetime):
     return re.sub(
-        rf"{TIME_PATTERN}", "", event_date
+        rf"{TIME_PATTERN}", "", event_datetime
     )
 
 
-def getDateWithHour(event_date):
+def getDateWithHour(event_datetime):
     return re.sub(
-        rf"{DATE_SUBSTITUTION}T{HOUR_SUBSTITUTION}:{MINUTE_SECOND_PATTERN}", r"\1:\2", event_date
+        rf"{DATE_SUBSTITUTION}T{HOUR_SUBSTITUTION}:{MINUTE_SECOND_PATTERN}", r"\1:\2", event_datetime
     )
 
 
