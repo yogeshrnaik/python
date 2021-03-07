@@ -75,29 +75,26 @@ def amountBracket(amount):
 
 
 def addAggregate(datapoint, aggregates=[]):
-    if datapoint == None:
-        aggregates.clear()
-        return aggregates
-    for i in range(0, len(aggregates)):
-        if aggregates[i]["datapoint"] == datapoint:
-            aggregates[i]["events"] += 1
+    for aggregate in aggregates:
+        if aggregate["datapoint"] == datapoint:
+            aggregate["events"] += 1
             return
 
     aggregates.append({"datapoint": datapoint, "events": 1})
 
 
 def aggregate(events):
-    aggregates = addAggregate(None)
+    aggregates = []
 
     for events in events:
         event_date, amount, = events["date"], events['amount']
         paymentMethod, merchantId = events['paymentMethod'], events["merchantId"]
 
-        addAggregate(getDateWithHour(event_date) + '|' + amountBracket(amount))
-        addAggregate(getDateWithHour(event_date) + '|' + amountBracket(amount) + '|' + paymentMethod)
-        addAggregate(amountBracket(amount) + '|' + paymentMethod)
-        addAggregate(getDateWithoutTime(event_date) + '|' + merchantId)
-        addAggregate(merchantId + '|' + paymentMethod)
+        addAggregate(getDateWithHour(event_date) + '|' + amountBracket(amount), aggregates)
+        addAggregate(getDateWithHour(event_date) + '|' + amountBracket(amount) + '|' + paymentMethod, aggregates)
+        addAggregate(amountBracket(amount) + '|' + paymentMethod, aggregates)
+        addAggregate(getDateWithoutTime(event_date) + '|' + merchantId, aggregates)
+        addAggregate(merchantId + '|' + paymentMethod, aggregates)
 
     return aggregates
 
