@@ -51,19 +51,19 @@ import re
 
 
 def amountBracket(amount):
-    if amount > 50000:
-        return ">500"
+    amountBracketRules = [
+        lambda amount: ">500" if amount > 50000 else "",
+        lambda amount: "100-500" if 10000 < amount < 50000 else "",
+        lambda amount: "50-100" if 5000 < amount < 10000 else "",
+        lambda amount: "10-50" if 1000 < amount < 5000 else "",
+        lambda amount: "<10" if amount < 1000 else "",
+    ]
 
-    if amount > 10000:
-        return "100-500"
-
-    if amount > 5000:
-        return "50-100"
-
-    if amount > 1000:
-        return "10-50"
-
-    return "<10"
+    return next(
+        filter(
+            lambda ruleResult: ruleResult,
+            [ruleFunc(amount) for ruleFunc in amountBracketRules])
+    )
 
 
 def addAggregate(datapoint, aggregates=[]):
