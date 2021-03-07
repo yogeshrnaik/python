@@ -50,20 +50,20 @@ layer, so the tests don't break.
 import re
 
 
-def amountBracket(event):
-    if event["amount"] < 50000:
-        if event["amount"] < 10000:
-            if event["amount"] < 5000:
-                if event["amount"] < 1000:
-                    return "<10"
-                else:
-                    return "10-50"
-            else:
-                return "50-100"
-        else:
-            return "100-500"
-    else:
+def amountBracket(amount):
+    if amount > 50000:
         return ">500"
+
+    if amount > 10000:
+        return "100-500"
+
+    if amount > 5000:
+        return "50-100"
+
+    if amount > 1000:
+        return "10-50"
+
+    return "<10"
 
 
 def addAggregate(datapoint, aggregates=[]):
@@ -82,11 +82,11 @@ def aggregate(events):
     aggregates = addAggregate(None)
 
     for i in range(0, len(events)):
-        addAggregate(re.sub(r"^(.+)T(\d+):.+$", r"\1:\2", events[i]["date"]) + '|' + amountBracket(events[i]))
+        addAggregate(re.sub(r"^(.+)T(\d+):.+$", r"\1:\2", events[i]["date"]) + '|' + amountBracket(events[i]['amount']))
         addAggregate(
-            re.sub(r"^(.+)T(\d+):.+$", r"\1:\2", events[i]["date"]) + '|' + amountBracket(events[i]) + '|' + events[i][
-                "paymentMethod"])
-        addAggregate(amountBracket(events[i]) + '|' + events[i]["paymentMethod"])
+            re.sub(r"^(.+)T(\d+):.+$", r"\1:\2", events[i]["date"]) + '|' + amountBracket(events[i]['amount']) + '|' +
+            events[i]["paymentMethod"])
+        addAggregate(amountBracket(events[i]['amount']) + '|' + events[i]["paymentMethod"])
         addAggregate(re.sub(r"T.+$", "", events[i]["date"]) + '|' + events[i]["merchantId"])
         addAggregate(events[i]["merchantId"] + '|' + events[i]["paymentMethod"])
 
