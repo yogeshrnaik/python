@@ -114,21 +114,23 @@ AGGREGATE_DATAPOINT_KEY_FUNCTIONS = [
 
 
 def aggregate(events):
-    """
-    TODO: this function needs to be made pure
-    :param events:
-    :return:
-    """
+    return aggregateByDatapoints(generateDatapoints(events))
+
+
+def aggregateByDatapoints(datapoints):
+    aggregates = []
+    for datapoint, count in datapoints.items():
+        aggregates.append({"datapoint": datapoint, "events": count})
+    return aggregates
+
+
+def generateDatapoints(events):
     dataPoints = {}
     for event in events:
         dataPointKeys = [datapointKeyFunc(event) for datapointKeyFunc in AGGREGATE_DATAPOINT_KEY_FUNCTIONS]
         for datapointKey in dataPointKeys:
             dataPoints[datapointKey] = dataPoints.get(datapointKey, 0) + 1
-
-    aggregates = []
-    for datapoint, count in dataPoints.items():
-        aggregates.append({"datapoint": datapoint, "events": count})
-    return aggregates
+    return dataPoints
 
 
 import unittest
