@@ -47,7 +47,7 @@ really want to change the shape of the data (e. g. to make the system strictly t
 layer, so the tests don't break.
 """
 
-import re
+from datetime import datetime
 
 AMOUNT_BRACKET_RULES = [
     lambda amount: ">500" if amount > 50000 else "",
@@ -57,12 +57,7 @@ AMOUNT_BRACKET_RULES = [
     lambda amount: "<10" if amount < 1000 else "",
 ]
 
-ANY_STRING = '.+'
-STARTS_WITH = '^'
-DATE_SUBSTITUTION = f'{STARTS_WITH}({ANY_STRING})'
-MINUTE_SECOND_PATTERN = f'{ANY_STRING}$'
-HOUR_SUBSTITUTION = '(\d+)'
-TIME_PATTERN = f'T{ANY_STRING}$'
+EVENT_DATETIME_PATTERN = '%Y-%m-%dT%H:%M:%SZ'
 
 
 def amountBracket(amount):
@@ -94,14 +89,18 @@ def getByHourAndAmountBracketAndPaymentMethod(event):
     return getDateWithHour(event['date']) + '|' + amountBracket(event['amount']) + '|' + event['paymentMethod']
 
 
+def to_datetime(date_time_str):
+    return datetime.strptime(date_time_str, EVENT_DATETIME_PATTERN)
+
+
 def getDateWithoutTime(event_datetime):
-    return re.sub(rf"{TIME_PATTERN}", "", event_datetime)
+    datetime_obj = to_datetime(event_datetime)
+    return datetime_obj.strftime("%Y-%m-%d")
 
 
 def getDateWithHour(event_datetime):
-    return re.sub(
-        rf"{DATE_SUBSTITUTION}T{HOUR_SUBSTITUTION}:{MINUTE_SECOND_PATTERN}", r"\1:\2", event_datetime
-    )
+    datetime_obj = to_datetime(event_datetime)
+    return f"{datetime_obj.strftime('%Y-%m-%d')}:{datetime_obj.time().hour}"
 
 
 AGGREGATE_DATAPOINT_KEY_FUNCTIONS = [
