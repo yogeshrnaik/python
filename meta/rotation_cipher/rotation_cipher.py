@@ -1,5 +1,3 @@
-import math
-
 '''
 Rotational Cipher
 One simple way to encrypt a string is to "rotate" every alphanumeric character by a certain amount. Rotating a character means replacing it with another character that is a certain number of steps away in normal alphabetic or numerical order.

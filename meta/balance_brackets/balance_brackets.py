@@ -1,5 +1,3 @@
-import math
-
 '''
 Balance Brackets
 A bracket is any of the following characters: (, ), {, }, [, or ].
@@ -28,6 +26,8 @@ Example 4
 s = )
 output: false
 '''
+
+
 # Add any extra import statements you may need here
 
 

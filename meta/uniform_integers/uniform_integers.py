@@ -1,4 +1,3 @@
-# Write any import statements here
 '''
 A positive integer is considered uniform if all of its digits are equal. For example, 222222 is uniform, while 223223 is not.
 Given two positive integers AA and BB, determine the number of uniform integers between AA and BB, inclusive.
