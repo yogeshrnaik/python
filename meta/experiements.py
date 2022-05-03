@@ -12,3 +12,6 @@ def isNumber(c):
 
 
 print(isAlphabet('0'))
+
+
+print(5//2)

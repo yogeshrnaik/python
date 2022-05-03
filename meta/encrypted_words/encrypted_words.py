@@ -36,8 +36,14 @@ import math
 
 
 def findEncryptedWord(s):
-    # Write your code here
-    pass
+    length = len(s)
+    if length == 1 or length == 2:
+        return s
+    midIndex = length // 2
+    if length % 2 == 0:
+        midIndex = midIndex - 1
+    midChar = s[midIndex]
+    return midChar + findEncryptedWord(s[0:midIndex]) + findEncryptedWord(s[midIndex + 1:length])
 
 
 # These are the tests we use to determine if the solution is correct.
