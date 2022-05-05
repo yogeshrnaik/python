@@ -31,10 +31,10 @@ def matching_pairs(s, t):
     swappable_without_reducing_match_count = False
     for char, non_matched_chars in non_matches.items():
         for non_match_char in non_matched_chars:
-            if char in non_matches[non_match_char]:
+            if char in non_matches.get(non_match_char, []):
                 return total_matches + 2
 
-    return total_matches
+    return total_matches - 1
 
 
 # These are the tests we use to determine if the solution is correct.
@@ -77,3 +77,18 @@ if __name__ == "__main__":
     check(expected_2, output_2)
 
     # Add your own test cases here
+    s_2, t_2 = "abc", "abd"
+    expected_2 = 1
+    output_2 = matching_pairs(s_2, t_2)
+    check(expected_2, output_2)
+
+    s_2, t_2 = "abcd", "abdc"
+    expected_2 = 4
+    output_2 = matching_pairs(s_2, t_2)
+    check(expected_2, output_2)
+
+    s_2, t_2 = "abcda", "abdca"
+    expected_2 = 5
+    output_2 = matching_pairs(s_2, t_2)
+    check(expected_2, output_2)
+
